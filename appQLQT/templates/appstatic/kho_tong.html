@@ -1,0 +1,301 @@
+{% extends "appstatic/base.html" %}
+
+{% block title %}
+    Kho Tổng - {{ don_vi_tong.ten_don_vi }}
+{% endblock %}
+
+{% block content %}
+<style>
+   
+
+.page-title {
+    font-size: 2rem;
+    color: #0a3d62;
+    margin-bottom: 1rem;
+}
+
+.info-list li {
+    margin: 0.5rem 0;
+}
+
+.styled-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1rem 0;
+    font-size: 1rem;
+    text-align: left;
+}
+
+.styled-table thead tr {
+    background-color: #0a3d62;
+    color: #ffffff;
+}
+
+.styled-table th,
+.styled-table td {
+    padding: 0.75rem;
+    border: 1px solid #dddddd;
+}
+
+.styled-form label {
+    display: block;
+    font-weight: bold;
+    margin-top: 1rem;
+}
+
+.styled-form input,
+.styled-form select,
+.styled-form textarea {
+    width: 100%;
+    padding: 0.5rem;
+    margin-top: 0.25rem;
+    border: 1px solid #cccccc;
+    border-radius: 5px;
+}
+
+.styled-form .btn {
+    margin-top: 1rem;
+    background-color: #0a3d62;
+    color: #ffffff;
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+}
+
+.styled-form .btn:hover {
+    background-color: #3c6382;
+}
+
+.message-list {
+    margin-top: 1rem;
+    padding: 0;
+    list-style: none;
+}
+
+.message-list li {
+    padding: 0.5rem;
+    margin: 0.25rem 0;
+    border-radius: 5px;
+}
+
+.message-list .success {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+.message-list .error {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+.modal-content {
+    border-radius: 10px;
+}
+
+.modal-title {
+    color: #0a3d62;
+}
+
+.btn-primary {
+    background-color: #0a3d62;
+    border: none;
+}
+
+.btn-primary:hover {
+    background-color: #7b7b7b;
+}
+.form-label {
+    margin-bottom: .5rem;
+    color: black;
+}
+</style>
+    <div class="container">
+        <h1 class="page-title">Kho Tổng - {{ don_vi.ten_don_vi }}</h1>
+        <p class="manager-info">Người quản lý: <strong>{{ kho.quan_li_kho }}</strong></p>
+
+        <h2>Thông tin chi tiết</h2>
+        <ul class="info-list">
+            <li><strong>Tên kho:</strong> {{ kho.ten_kho }}</li>
+            <li><strong>Đơn vị:</strong> {{ kho.don_vi.ten_don_vi }}</li>
+        </ul>
+
+
+
+
+
+        <h2>Quân tư trang trong kho</h2>
+        <table class="styled-table">
+            <thead>
+                <tr>
+                    <th>Tên quân tư trang</th>
+                    <th>Loại</th>
+                    <th>Kích cỡ</th>
+                    <th>Số lượng</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in quan_tu_trang_list %}
+        <tr>
+            <td>{{ item.quan_tu_trang.ten_qtt }}</td>
+            <td>{{ item.quan_tu_trang.loai_qtt }}</td>
+            <td>{{ item.quan_tu_trang.kich_co }}</td>
+            <td>{{ item.so_luong }}</td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="4">Không có quân tư trang nào trong kho.</td>
+        </tr>
+        {% endfor %}
+            </tbody>
+        </table>
+
+        <hr>
+
+        <!-- Form tạo loại quân tư trang mới -->
+        <h2>Quản lý quân tư trang</h2>
+<button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#createQTTModal">
+    Tạo QTT
+</button>
+
+<!-- Modal -->
+<div class="modal fade" id="createQTTModal" tabindex="-1" aria-labelledby="createQTTModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="createQTTModalLabel">Tạo loại quân tư trang mới</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form method="POST" id="createQTTForm">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="ten_qtt" class="form-label">Tên quân tư trang:</label>
+                        <input type="text" id="ten_qtt" name="ten_qtt" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="loai_qtt" class="form-label">Loại:</label>
+                        <input type="text" id="loai_qtt" name="loai_qtt" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="kich_co" class="form-label">Kích cỡ:</label>
+                        <input type="text" id="kich_co" name="kich_co" class="form-control">
+                    </div>
+                    <div class="mb-3">
+                        <label for="mo_ta" class="form-label">Mô tả:</label>
+                        <textarea id="mo_ta" name="mo_ta" class="form-control"></textarea>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                        <button type="submit" name="create_qtt" class="btn btn-primary">Tạo</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+        <button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#importQTTModal">
+            Nhập QTT vao kho
+        </button>
+        
+        <!-- Modal -->
+        <div class="modal fade" id="importQTTModal" tabindex="-1" aria-labelledby="importQTTModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="importQTTModalLabel">Nhập số lượng quân tư trang vào kho</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form method="POST" id="importQTTForm">
+                            {% csrf_token %}
+                            <div class="mb-3">
+                                <label for="qtt_id" class="form-label">Chọn quân tư trang:</label>
+                                <select id="qtt_id" name="qtt_id" class="form-select" required>
+                                    <option value="">-- Chọn --</option>
+                                    {% for qtt in quan_tu_trang_list %}
+                                        <option value="{{ qtt.id }}">{{ qtt.ten_qtt }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="so_luong" class="form-label">Số lượng:</label>
+                                <input type="number" id="so_luong" name="so_luong" class="form-control" min="1" required>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                                <button type="submit" name="import_qtt" class="btn btn-primary">Nhập</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+            <!-- Nút mở modal --
+
+        <!-- Form xuất số lượng quân tư trang từ kho -->
+        <button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#exportQTTModal">
+            Xuất QTT
+        </button>
+        
+        <!-- Modal -->
+        <div class="modal fade" id="exportQTTModal" tabindex="-1" aria-labelledby="exportQTTModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exportQTTModalLabel">Xuất quân tư trang từ kho</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form method="POST" id="exportQTTForm">
+                            {% csrf_token %}
+                            <div class="mb-3">
+                                <label for="qtt_id_export" class="form-label">Chọn quân tư trang:</label>
+                                <select id="qtt_id_export" name="qtt_id_export" class="form-select" required>
+                                    <option value="">-- Chọn --</option>
+                                    {% for item in kho.khoquantrang_set.all %}
+                                        <option value="{{ item.quan_tu_trang.id }}">
+                                            {{ item.quan_tu_trang.ten_qtt }} (Số lượng: {{ item.so_luong }})
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="so_luong_export" class="form-label">Số lượng:</label>
+                                <input type="number" id="so_luong_export" name="so_luong_export" class="form-control" min="1" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="don_vi_nhan" class="form-label">Chọn đơn vị nhận:</label>
+                                <select id="don_vi_nhan" name="don_vi_nhan" class="form-select" required>
+                                    <option value="">-- Chọn --</option>
+                                    {% for don_vi in don_vi_list %}
+                                        <option value="{{ don_vi.id }}">{{ don_vi.ten_don_vi }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                                <button type="submit" name="export_qtt" class="btn btn-primary">Xuất</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <hr>
+
+        <!-- Hiển thị thông báo -->
+        {% if messages %}
+            <ul class="message-list">
+                {% for message in messages %}
+                    <li class="{{ message.tags }}">{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    </div>
+{% endblock %}

@@ -1,0 +1,98 @@
+{% extends "appstatic/base.html" %}
+
+{% block title %}
+    Kho Tổng - {{ don_vi_tong.ten_don_vi }}
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2>Danh sách Phiếu Nhập</h2>
+
+    <!-- Hiển thị thông báo -->
+    {% if messages %}
+        <div class="messages">
+            {% for message in messages %}
+                <div class="alert {{ message.tags }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <!-- Bảng danh sách phiếu nhập -->
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Mã Phiếu</th>
+                <th>Kho</th>
+                <th>Quân Tư Trang</th>
+                <th>Số Lượng</th>
+                <th>Ngày Nhập</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for phieu in phieu_nhap_list %}
+                <tr>
+                    <td>{{ phieu.code }}</td>
+                    <td>{{ phieu.kho.ten_kho }}</td>
+                    <td>{{ phieu.quan_tu_trang.ten_qtt }}</td>
+                    <td>{{ phieu.so_luong_nhap }}</td>
+                    <td>{{ phieu.ngay_nhap }}</td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="5" class="text-center">Không có phiếu nhập nào.</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<style>
+    .container {
+        margin: 20px auto;
+        width: 90%;
+        max-width: 1200px;
+        font-family: Arial, sans-serif;
+    }
+    h2 {
+        text-align: center;
+        color: #333;
+        margin-bottom: 20px;
+    }
+    .table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    .table th, .table td {
+        padding: 10px;
+        text-align: left;
+        border: 1px solid #ddd;
+    }
+    .table th {
+        background-color: #7e7e7e;
+    }
+    .table tr:nth-child(even) {
+        /* background-color: #7e7e7e; */
+    }
+    .text-center {
+        text-align: center;
+    }
+    .alert {
+        padding: 10px;
+        margin-bottom: 15px;
+        border: 1px solid transparent;
+        border-radius: 4px;
+    }
+    .alert.success {
+        color: #155724;
+        background-color: #d4edda;
+        border-color: #c3e6cb;
+    }
+    .alert.error {
+        color: #721c24;
+        background-color: #f8d7da;
+        border-color: #f5c6cb;
+    }
+</style>
+{% endblock %}

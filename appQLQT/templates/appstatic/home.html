@@ -1,0 +1,345 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trang chủ - Trường Sĩ Quan Thông Tin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #0a3d62;
+            --secondary-color: #3c6382;
+            --accent-color: #f6b93b;
+            --text-color: #ffffff;
+            --background-color: #0a3d62;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            background-color: rgba(10, 61, 98, 0.8);
+            padding: 1rem 0;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        header.scrolled {
+            background-color: rgba(10, 61, 98, 0.95);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .logo-image {
+            width: 50px;
+            height: 50px;
+            object-fit: contain;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--accent-color);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        .nav-links a {
+            color: var(--text-color);
+            text-decoration: none;
+            font-weight: bold;
+            transition: color 0.3s ease;
+            position: relative;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -5px;
+            left: 0;
+            background-color: var(--accent-color);
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        main {
+            padding: 6rem 0 3rem;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 2rem;
+            color: var(--accent-color);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            animation: fadeInUp 1s ease;
+        }
+
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .card {
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            animation: fadeIn 1s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .card-image {
+            height: 200px;
+            background-size: cover;
+            background-position: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card-image::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(to bottom, rgba(10, 61, 98, 0.2), rgba(10, 61, 98, 0.8));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .card:hover .card-image::before {
+            opacity: 1;
+        }
+
+        .card-content {
+            padding: 1.5rem;
+        }
+
+        .card h2 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: var(--accent-color);
+        }
+
+        .card p {
+            margin-bottom: 1rem;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .btn {
+            display: inline-block;
+            background-color: var(--accent-color);
+            color: var(--primary-color);
+            padding: 0.7rem 1.5rem;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn:hover {
+            background-color: #e59f1f;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(230, 159, 31, 0.4);
+        }
+
+        footer {
+            background-color: rgba(10, 61, 98, 0.9);
+            padding: 2rem 0;
+            margin-top: 3rem;
+        }
+
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .social-links {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .social-links a {
+            color: var(--text-color);
+            font-size: 1.5rem;
+            transition: color 0.3s ease, transform 0.3s ease;
+        }
+
+        .social-links a:hover {
+            color: var(--accent-color);
+            transform: translateY(-3px);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+
+            .footer-content {
+                flex-direction: column;
+                gap: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav class="container">
+            <div class="logo-container">
+                <img src="{% static 'image/logo.png' %}" alt="Logo" class="logo-image">
+
+                <div class="logo">Trường Sĩ Quan Thông Tin</div>
+            </div>
+            <div class="nav-links">
+                <a href="#">Thông tin</a>
+                <a href="#">Hướng dẫn</a>
+                <a href="#">Liên hệ</a>
+                <a href="{% url 'login' %}">Đăng nhập</a>
+
+            </div>
+        </nav>
+    </header>
+
+    <main class="container">
+        <h1>QUẢN LÝ QUÂN TƯ TRANG</h1>
+        <div class="card-grid">
+            <div class="card">
+                <div class="card-image" style="background-image: url('https://luatsux.vn/wp-content/uploads/2022/12/Quan-tu-trang-bo-doi-gom-nhung-gi-2023.jpg');"></div>
+                <div class="card-content">
+                    <h2>Các đơn vị TSQTTS</h2>
+                    <p>Nơi quản lý quân tư trang được cấp phát.</p>
+                    <a href="#" class="btn">Xem thêm</a>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-image" style="background-image: url('https://file.qdnd.vn/data/images/0/2019/09/09/dieuthuy/t1%201.jpg?dpi=150&quality=100&w=575');"></div>
+                <div class="card-content">
+                    <h2>Kho Quân Trang TSQTT</h2>
+                    <p>Quản lý quân trang chung của Nhà trường</p>
+                    <a href="#" class="btn">Xem thêm</a>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-image" style="background-image: url('https://lh3.googleusercontent.com/proxy/uPBjsdCeUEY-53tuquIo5b6-MKInEToEcuRW1UuKfmRyuxtN3eUe16NTe0Pe44zTMeheTgxP5vDVybDPLGJa1mex8HorfdZzZequ88LGd5KbUxLFaWbmmCui_J33GPRD7dmbO7lh76cBaq0LCmB2EV06US8o6TTQNDSD-uLBTw');"></div>
+                <div class="card-content">
+                    <h2>Quân phục-Trang bị</h2>
+                    <p>Các loại quân tư trang.</p>
+                    <a href="#" class="btn">Xem thêm</a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container footer-content">
+            <p>&copy; 2024 Trường Sĩ Quan Thông Tin. Mọi quyền được bảo lưu.</p>
+            <div class="social-links">
+                <a href="#" aria-label="Facebook">&#xf09a;</a>
+                <a href="#" aria-label="Twitter">&#xf099;</a>
+                <a href="#" aria-label="Instagram">&#xf16d;</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const header = document.querySelector('header');
+            const cards = document.querySelectorAll('.card');
+
+            window.addEventListener('scroll', () => {
+                if (window.scrollY > 50) {
+                    header.classList.add('scrolled');
+                } else {
+                    header.classList.remove('scrolled');
+                }
+            });
+
+            const observerOptions = {
+                threshold: 0.1
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }
+                });
+            }, observerOptions);
+
+            cards.forEach(card => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                observer.observe(card);
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,34 @@
+{% extends "appstatic/base.html" %}
+
+{% block title %}
+    Quản lý quân tư trang
+{% endblock %}
+
+{% block content %}
+    <h1>QUẢN LÝ QUÂN TƯ TRANG</h1>
+    <div class="card-grid">
+        <div class="card">
+            <div class="card-image" style="background-image: url('https://luatsux.vn/wp-content/uploads/2022/12/Quan-tu-trang-bo-doi-gom-nhung-gi-2023.jpg');"></div>
+            <div class="card-content">
+                <h2>Quân tư trang của đơn vị</h2>
+                <p>Nơi quản lý quân tư trang được cấp phát.</p>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-image" style="background-image: url('https://file.qdnd.vn/data/images/0/2019/09/09/dieuthuy/t1%201.jpg?dpi=150&quality=100&w=575');"></div>
+            <div class="card-content">
+                <h2>Quản lý phiếu nhận</h2>
+                <p>Sao lưu và kiểm kê quân trang được nhận từ kho</p>
+                <a href="{% url 'nhap' %}" class="btn">Xem thêm</a>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-image" style="background-image: url('https://lh3.googleusercontent.com/proxy/uPBjsdCeUEY-53tuquIo5b6-MKInEToEcuRW1UuKfmRyuxtN3eUe16NTe0Pe44zTMeheTgxP5vDVybDPLGJa1mex8HorfdZzZequ88LGd5KbUxLFaWbmmCui_J33GPRD7dmbO7lh76cBaq0LCmB2EV06US8o6TTQNDSD-uLBTw');"></div>
+            <div class="card-content">
+                <h2>Quản lý phiếu cấp phát</h2>
+                <p>Sao lưu và kiểm kê quân trang cấp phát đến các đơn vị</p>
+                <a href="{% url 'xuat' %}" class="btn">Xem thêm</a>
+            </div>
+        </div>
+    </div>
+{% endblock %}

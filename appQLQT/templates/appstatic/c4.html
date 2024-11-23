@@ -1,0 +1,87 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Giao diện Đại đội - Cấp phát cho Trung đội</title>
+    <link rel="stylesheet" href="{% static 'css/stylesheet.css' %}">
+</head>
+<body>
+    <header>
+        <h1>Hệ thống quản lý quân trang - Cấp phát từ Đại đội X cho Trung đội</h1>
+        <nav>
+            <ul>
+                <li><a href="#danh-sach-trung-doi">Danh Sách Trung Đội</a></li>
+                <li><a href="#cap-phat">Cấp Phát Quân Trang</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <!-- Danh sách Trung Đội -->
+        <section id="danh-sach-trung-doi">
+            <h2>Danh Sách Trung Đội</h2>
+            <p>Danh sách các trung đội thuộc Đại đội X.</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Tên Trung Đội</th>
+                        <th>Người quản lý</th>
+                        <th>Số quân nhân</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Loop qua các item của TrungDoi -->
+                    <tr>
+                        <td>Trung đội 1</td>
+                        <td>Phạm Văn C</td>
+                        <td>30</td>
+                    </tr>
+                    <!-- ... -->
+                </tbody>
+            </table>
+        </section>
+
+        <!-- Cấp phát quân trang cho Trung đội -->
+        <section id="cap-phat">
+            <h2>Cấp Phát Quân Trang Cho Trung Đội</h2>
+            <p>Quản lý cấp phát quân trang từ Đại đội cho các trung đội.</p>
+            <button onclick="openModal('phieuCapPhatModal')">Tạo Phiếu Cấp Phát Cho Trung Đội</button>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Trung đội nhận</th>
+                        <th>Tên quân tư trang</th>
+                        <th>Số lượng</th>
+                        <th>Ngày cấp phát</th>
+                        <th>Trạng thái</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Loop qua các item của PhieuCapPhat -->
+                    <tr>
+                        <td>Trung đội 1</td>
+                        <td>Quân phục</td>
+                        <td>15 bộ</td>
+                        <td>2024-02-10</td>
+                        <td>Đã cấp</td>
+                    </tr>
+                    <!-- ... -->
+                </tbody>
+            </table>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 Đại đội X - Quản lý quân trang</p>
+    </footer>
+
+    <script>
+        function openModal(id) {
+            // Implement modal open functionality here
+        }
+    </script>
+</body>
+</html>
