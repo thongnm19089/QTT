@@ -34,7 +34,7 @@
 
         </div>
     </nav> -->
-    <nav class="navbar navbar-expand-sm bg-dark navbar-dark">
+    <nav class="navbar navbar-expand-sm navbar-dark" style="background-color: #23517200;">
         <div class="container-fluid">
             <a href="{% url 'D20' %}"><div class="logo-container">
                 <img src="{% static 'image/logo.png' %}" alt="Logo" class="logo-image">
@@ -45,12 +45,6 @@
           </button>
           <div class="collapse navbar-collapse" id="collapsibleNavbar">
             <ul class="navbar-nav justify-content-end">
-                
-                    
-                        
-                            
-              
-             
                     {% for group_name, don_vi_list in grouped_don_vi.items %}
                     <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">{{ group_name }}</a>
@@ -58,13 +52,11 @@
                         {% for don_vi in don_vi_list %}
                         <li><a class="dropdown-item" href="{% url 'kho' don_vi.id %}">{{ don_vi.ten_don_vi }}</a></li>
                       {% endfor %}
-                   
                     </ul>
                     </li>
                     {% empty %}
                         <li>Không có nhóm đơn vị nào.</li>
                     {% endfor %}
-                 
                     {% if request.user.is_authenticated %}
               <li class="nav-item">
                 <a class="nav-link" href="#">{{ request.user.username }}</a>

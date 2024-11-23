@@ -30,7 +30,7 @@ class Kho(models.Model):
     
 class DonVi(models.Model):
     DON_VI_CHOICES = [
-        ('tong', 'Tổng'),
+        ('tong', 'Đơn vị'),
         ('trung_doan', 'Trung đoàn'),
         ('dai_doi', 'Đại đội'),
         ('tieu_doi', 'Tiểu đội'),
