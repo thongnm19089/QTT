@@ -11,7 +11,7 @@ from django.contrib.auth import get_user_model
 
 # Model Kho
 DON_VI_CHOICES = [
-        ('tong', 'Kho'),
+        ('kho', 'Kho'),
         ('tieu_doan', 'Tiểu đoàn'),
         ('dai_doi', 'Đại đội'),
         ('trung_doi', 'Trung đội'),
@@ -70,7 +70,15 @@ class DonVi(models.Model):
         return f"{self.ten_don_vi} ({self.get_cap_do_display()})"
 
 
+class UserProfile(models.Model):
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='profile')
+    don_vi = models.ForeignKey('DonVi', on_delete=models.SET_NULL, null=True, blank=True, related_name='user_profiles')
+    cap_do = models.CharField(max_length=20, choices=DON_VI_CHOICES, null=True, blank=True)
 
+    def __str__(self):
+        return f"UserProfile for {self.user.username} - {self.get_cap_do_display()} - Don Vi: {self.don_vi.ten_don_vi if self.don_vi else 'Chưa có đơn vị'}"
+
+    
 User = get_user_model()
 
 class QuanNhan(models.Model):
@@ -84,10 +92,10 @@ class QuanNhan(models.Model):
 
 class QuanTuTrang(models.Model):
     # ma_qtt = models.CharField(max_length=10, primary_key=True)
+    ma_qtt = models.CharField(max_length=100,null=True , blank=True)
     ten_qtt = models.CharField(max_length=100)
     loai_qtt = models.CharField(max_length=50)
     kich_co = models.CharField(max_length=20, blank=True)
-    mo_ta = models.TextField(blank=True)
 
     def __str__(self):
         return f"{self.ten_qtt}"

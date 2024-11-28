@@ -1,105 +1,117 @@
-<style>
-   
+if request.method == 'POST':
+try:
+    # Xử lý tạo loại quân tư trang mới
+    if 'create_qtt' in request.POST:
+        ten_qtt = request.POST.get('ten_qtt')
+        loai_qtt = request.POST.get('loai_qtt')
+        kich_co = request.POST.get('kich_co', '')
+        mo_ta = request.POST.get('mo_ta', '')
 
-    .page-title {
-        font-size: 2rem;
-        color: #0a3d62;
-        margin-bottom: 1rem;
-    }
-    
-    .info-list li {
-        margin: 0.5rem 0;
-    }
-    
-    .styled-table {
-        width: 100%;
-        border-collapse: collapse;
-        margin: 1rem 0;
-        font-size: 1rem;
-        text-align: left;
-    }
-    
-    .styled-table thead tr {
-        background-color: #0a3d62;
-        color: #ffffff;
-    }
-    
-    .styled-table th,
-    .styled-table td {
-        padding: 0.75rem;
-        border: 1px solid #dddddd;
-    }
-    
-    .styled-form label {
-        display: block;
-        font-weight: bold;
-        margin-top: 1rem;
-    }
-    
-    .styled-form input,
-    .styled-form select,
-    .styled-form textarea {
-        width: 100%;
-        padding: 0.5rem;
-        margin-top: 0.25rem;
-        border: 1px solid #cccccc;
-        border-radius: 5px;
-    }
-    
-    .styled-form .btn {
-        margin-top: 1rem;
-        background-color: #0a3d62;
-        color: #ffffff;
-        padding: 0.5rem 1rem;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-        font-size: 1rem;
-    }
-    
-    .styled-form .btn:hover {
-        background-color: #3c6382;
-    }
-    
-    .message-list {
-        margin-top: 1rem;
-        padding: 0;
-        list-style: none;
-    }
-    
-    .message-list li {
-        padding: 0.5rem;
-        margin: 0.25rem 0;
-        border-radius: 5px;
-    }
-    
-    .message-list .success {
-        background-color: #d4edda;
-        color: #155724;
-    }
-    
-    .message-list .error {
-        background-color: #f8d7da;
-        color: #721c24;
-    }
-    .modal-content {
-        border-radius: 10px;
-    }
-    
-    .modal-title {
-        color: #0a3d62;
-    }
-    
-    .btn-primary {
-        background-color: #0a3d62;
-        border: none;
-    }
-    
-    .btn-primary:hover {
-        background-color: #7b7b7b;
-    }
-    .form-label {
-        margin-bottom: .5rem;
-        color: black;
-    }
-    </style>
+        if not ten_qtt or not loai_qtt:
+            messages.error(request, "Vui lòng điền đầy đủ thông tin loại quân tư trang!")
+        else:
+            QuanTuTrang.objects.create(
+                ten_qtt=ten_qtt,
+                loai_qtt=loai_qtt,
+                kich_co=kich_co,
+                mo_ta=mo_ta
+            )
+            messages.success(request, f"Đã tạo loại quân tư trang: {ten_qtt}.")
+
+    # Xử lý nhập quân tư trang
+    elif 'import_qtt' in request.POST:
+        qtt_id = request.POST.get('qtt_id')
+        so_luong = request.POST.get('so_luong')
+
+        if not qtt_id or not so_luong or int(so_luong) <= 0:
+            messages.error(request, "Vui lòng chọn quân tư trang và nhập số lượng hợp lệ!")
+        else:
+            quan_tu_trang = get_object_or_404(QuanTuTrang, id=qtt_id)
+            so_luong = int(so_luong)
+
+            # Nhập quân tư trang vào kho
+            kho_quan_trang, created = KhoQuanTrang.objects.get_or_create(
+                kho=kho,
+                quan_tu_trang=quan_tu_trang,
+                defaults={'so_luong': so_luong}
+            )
+            # if not created:
+            #     kho_quan_trang.so_luong += so_luong
+            #     kho_quan_trang.save()
+
+            # Lưu phiếu nhập
+            PhieuNhap.objects.create(kho=kho, quan_tu_trang=quan_tu_trang, so_luong_nhap=so_luong)
+            messages.success(request, f"Đã nhập {so_luong} {quan_tu_trang.ten_qtt} vào kho {kho.ten_kho}.")
+
+    # Xử lý xuất quân tư trang
+    elif 'export_qtt' in request.POST:
+        qtt_ids = request.POST.getlist('qtt_id_export[]')  # Danh sách quân tư trang được chọn
+        so_luong_exports = request.POST.getlist('so_luong_export[]')  # Danh sách số lượng tương ứng (chỉ nhận một số lượng)
+        don_vi_nhan_id = request.POST.get('don_vi_nhan')  # Đơn vị nhận
+
+        try:
+            # Lấy thông tin đơn vị nhận
+            don_vi_nhan = get_object_or_404(DonVi, id=don_vi_nhan_id)
+
+            # Nếu không có quân tư trang hoặc số lượng
+            if not qtt_ids or not so_luong_exports or len(so_luong_exports) != 1:
+                messages.error(request, "Vui lòng nhập đầy đủ thông tin để xuất!")
+                return redirect(request.path)
+
+            # Lấy số lượng chung từ form (áp dụng cho tất cả quân tư trang)
+            so_luong_export = int(so_luong_exports[0])
+            if so_luong_export <= 0:
+                messages.error(request, "Số lượng xuất phải lớn hơn 0!")
+                return redirect(request.path)
+
+            # Xử lý xuất cho từng quân tư trang
+            for qtt_id in qtt_ids:
+                try:
+                    quan_tu_trang = get_object_or_404(QuanTuTrang, id=qtt_id)
+                    kho_quan_trang = get_object_or_404(KhoQuanTrang, kho=kho, quan_tu_trang=quan_tu_trang)
+
+                    if kho_quan_trang.so_luong >= so_luong_export:
+                        # Giảm số lượng trong kho nguồn
+                        # kho_quan_trang.so_luong -= so_luong_export
+                        # kho_quan_trang.save()
+
+                        # Thêm vào kho của đơn vị nhận
+                        don_vi_kho = don_vi_nhan.kho
+                        don_vi_kho_qtt, created = KhoQuanTrang.objects.get_or_create(
+                            kho=don_vi_kho,
+                            quan_tu_trang=quan_tu_trang,
+                            defaults={'so_luong': so_luong_export}
+                        )
+                        # if not created:
+                        #     don_vi_kho_qtt.so_luong += so_luong_export
+                        #     don_vi_kho_qtt.save()
+
+                        # Lưu phiếu xuất
+                        PhieuXuat.objects.create(
+                            kho=kho,
+                            quan_tu_trang=quan_tu_trang,
+                            so_luong_xuat=so_luong_export,
+                            don_vi_nhan=don_vi_nhan
+                        )
+
+                        messages.success(
+                            request,
+                            f"Đã xuất {so_luong_export} {quan_tu_trang.ten_qtt} đến {don_vi_nhan.ten_don_vi}."
+                        )
+                    else:
+                        messages.error(
+                            request,
+                            f"Số lượng trong kho không đủ để xuất {quan_tu_trang.ten_qtt}!"
+                        )
+                except (QuanTuTrang.DoesNotExist, KhoQuanTrang.DoesNotExist):
+                    messages.error(request, f"Quân tư trang {qtt_id} không tồn tại trong kho!")
+
+        except Exception as e:
+            messages.error(request, "Đã xảy ra lỗi trong quá trình xuất quân tư trang!")
+            print(f"Error: {e}")
+
+
+
+except Exception as e:
+    messages.error(request, f"Đã xảy ra lỗi: {str(e)}")
+

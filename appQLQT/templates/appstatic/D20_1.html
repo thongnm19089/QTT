@@ -5,6 +5,14 @@
 {% endblock %}
 
 {% block content %}
+{% for group, don_vis in grouped_don_vi.items %}
+    <ul>
+    {% for don_vi in don_vis %}
+        <li><a class="nav-link" href="{% url 'kho' don_vi.id %}">{{ don_vi.ten_don_vi }}</a></li>
+    {% endfor %}
+    </ul>
+{% endfor %}
+
     <h1>QUẢN LÝ QUÂN TƯ TRANG</h1>
     <div class="card-grid">
         <div class="card">
@@ -12,6 +20,11 @@
             <div class="card-content">
                 <h2>Quân tư trang của đơn vị</h2>
                 <p>Nơi quản lý quân tư trang được cấp phát.</p>
+                
+                <a href="{% url 'kho' current_user_don_vi.id %}" class="btn"> {{ current_user_don_vi.ten_don_vi }}</a>
+
+
+                
             </div>
         </div>
         <div class="card">

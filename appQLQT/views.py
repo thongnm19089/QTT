@@ -22,10 +22,10 @@ from django.shortcuts import render, get_object_or_404, redirect
 from .models import DonVi, Kho, QuanTuTrang, KhoQuanTrang
 from django.contrib import messages
 
-
 def kho_view(request, don_vi_id):
     # Lấy đơn vị và kho liên kết
     don_vi = get_object_or_404(DonVi, id=don_vi_id)
+
     kho = don_vi.kho  # Liên kết OneToOne giữa DonVi và Kho
     user_profile = request.user.profile
     print(user_profile)
@@ -33,21 +33,7 @@ def kho_view(request, don_vi_id):
         try:
             # Xử lý tạo loại quân tư trang mới
             if 'create_qtt' in request.POST:
-                ten_qtt = request.POST.get('ten_qtt')
-                loai_qtt = request.POST.get('loai_qtt')
-                kich_co = request.POST.get('kich_co', '')
-                mo_ta = request.POST.get('mo_ta', '')
-
-                if not ten_qtt or not loai_qtt:
-                    messages.error(request, "Vui lòng điền đầy đủ thông tin loại quân tư trang!")
-                else:
-                    QuanTuTrang.objects.create(
-                        ten_qtt=ten_qtt,
-                        loai_qtt=loai_qtt,
-                        kich_co=kich_co,
-                        mo_ta=mo_ta
-                    )
-                    messages.success(request, f"Đã tạo loại quân tư trang: {ten_qtt}.")
+                pass
 
             # Xử lý nhập quân tư trang
             elif 'import_qtt' in request.POST:
@@ -163,14 +149,14 @@ def kho_view(request, don_vi_id):
         don_vi_list = don_vi_list.filter(cap_do='trung_doi')
     # elif user_profile.cap_do == 'tieu_doan':
     #     don_vi_list = don_vi_list.filter(cap_do='trung_doi')
-    print(don_vi_list)
-    don_vi_list = don_vi_list[:1]  # Giới hạn chỉ lấy 1 đơn vị
-
+    
+    # don_vi_list = don_vi_list[:1]
     # don_vi_list = DonVi.objects.all().order_by('code')  # hoặc thêm filter nếu cần
     grouped_don_vi = defaultdict(list)
     for dv in DonVi.objects.all().order_by('code'):
         grouped_don_vi[dv.get_cap_do_display()].append(dv)
     grouped_don_vi = dict(grouped_don_vi)
+  
 
     return render(request, 'appstatic/kho_tong.html', {
         'don_vi': don_vi,
@@ -180,58 +166,6 @@ def kho_view(request, don_vi_id):
         'don_vi_list': don_vi_list,
         'grouped_don_vi': grouped_don_vi,
         'user_profile': user_profile,
-    })
-
-
-
-def trung_doan_view(request):
-    # Lấy danh sách đơn vị cấp Trung đoàn
-    don_vi_trung_doan_list = DonVi.objects.filter(cap_do='trung_doan')
-   
-    if not don_vi_trung_doan_list.exists():
-        messages.error(request, "Không tìm thấy đơn vị Trung đoàn nào.")
-        return redirect('trang-chu')
-
-    # Nếu chỉ lấy bản ghi đầu tiên
-    don_vi_trung_doan = don_vi_trung_doan_list.first()
-    kho_trung_doan = don_vi_trung_doan.kho
-   
-    # Logic POST (xuất quân tư trang) không thay đổi
-    if request.method == 'POST' and 'export_qtt' in request.POST:
-        qtt_id_export = request.POST.get('qtt_id_export')
-        so_luong_export = request.POST.get('so_luong_export')
-        don_vi_nhan_id = request.POST.get('don_vi_nhan')
-
-        try:
-            quan_tu_trang = QuanTuTrang.objects.get(id=qtt_id_export)
-            don_vi_nhan = DonVi.objects.get(id=don_vi_nhan_id)
-            so_luong_export = int(so_luong_export)
-
-            kho_quan_trang = KhoQuanTrang.objects.get(kho=kho_trung_doan, quan_tu_trang=quan_tu_trang)
-            if kho_quan_trang.so_luong >= so_luong_export:
-                kho_quan_trang.so_luong -= so_luong_export
-                kho_quan_trang.save()
-
-                phieu_xuat = PhieuXuat.objects.create(
-                    kho=kho_trung_doan,
-                    quan_tu_trang=quan_tu_trang,
-                    so_luong_xuat=so_luong_export,
-                    don_vi_nhan=don_vi_nhan
-                )
-                messages.success(request, f"Đã xuất {so_luong_export} {quan_tu_trang.ten_qtt} đến {don_vi_nhan.ten_don_vi}")
-            else:
-                messages.error(request, "Không đủ số lượng trong kho để xuất.")
-        except (QuanTuTrang.DoesNotExist, DonVi.DoesNotExist, KhoQuanTrang.DoesNotExist, ValueError):
-            messages.error(request, "Dữ liệu không hợp lệ. Vui lòng kiểm tra lại.")
-
-    quan_tu_trang_list = kho_trung_doan.khoquantrang_set.all()
-    don_vi_list = DonVi.objects.exclude(cap_do='trung_doan')
-
-    return render(request, 'appstatic/trung_doan.html', {
-        'don_vi_trung_doan': don_vi_trung_doan,
-        'kho_trung_doan': kho_trung_doan,
-        'quan_tu_trang_list': quan_tu_trang_list,
-        'don_vi_list': don_vi_list,
     })
 
 
@@ -299,6 +233,9 @@ def user_login(request):
             return redirect('home')  # Chuyển hướng đến trang chính
      return render(request, "appstatic/login.html") 
 def login_view(request):
+    if request.user.is_authenticated:
+        return redirect('D20')  # Trang chủ sau khi đăng nhập
+
     if request.method == 'POST':
         username = request.POST.get('username')
         password = request.POST.get('password')
@@ -306,12 +243,7 @@ def login_view(request):
         
         if user is not None:
             login(request, user)
-           
-            # if username == 'qlqt@tieudoan20' and password == 'd20_qlqt':
-            if username == 'thongnm' and password == 'a':
-                return redirect('D20') 
-            else:
-                return redirect('home')  
+            return redirect('D20')  # Chuyển hướng đến trang chính sau khi đăng nhập thành công
         else:
             messages.error(request, 'Tên đăng nhập hoặc mật khẩu không đúng.')
     return render(request, 'appstatic/login.html')
@@ -320,19 +252,75 @@ def logout_view(request):
     logout(request)
     return redirect('login')  
 
+
+
+from .models import DonVi
+
+def get_current_user_don_vi(user_profile):
+    # Trả về đơn vị của người dùng hiện tại
+    don_vi = user_profile.don_vi
+    return {
+        'id': don_vi.id,
+        'ten_don_vi': don_vi.ten_don_vi
+    }
 @login_required(login_url="login")
 def D20_view(request):
-    don_vi_list12 = DonVi.objects.all()  # Loại trừ chính đơn vị hiện tại
+    # Lấy user_profile từ người dùng hiện tại
+    user_profile = request.user.profile  # Đây là đối tượng UserProfile của người dùng
 
-    grouped_don_vi = defaultdict(list)
+    # Lấy đơn vị của người dùng hiện tại
+    current_user_don_vi = get_current_user_don_vi(user_profile)
 
-    for don_vi in don_vi_list12:  # Lặp qua danh sách đơn vị
-        grouped_don_vi[don_vi.get_cap_do_display()].append(don_vi)
+    # Truyền dữ liệu vào template
+    return render(request, 'appstatic/D20_1.html', {
+        'current_user_don_vi': current_user_don_vi
+    })
 
-    # Chuyển đổi defaultdict thành dict
-    grouped_don_vi = dict(grouped_don_vi)
-    return render(request, 'appstatic/D20_1.html' ,{
+from django.shortcuts import render
+from django.contrib import messages
+from .models import QuanTuTrang
+
+def manage_qtt(request):
+    if request.method == 'POST':
+        if 'create_qtt' in request.POST:
+            # Tạo mới quân tư trang
+            ten_qtt = request.POST.get('ten_qtt')
+            loai_qtt = request.POST.get('loai_qtt')
+            kich_co = request.POST.get('kich_co', '')
+            ma_qtt = request.POST.get('ma_qtt', '')
+
+            if not ten_qtt or not loai_qtt:
+                messages.error(request, "Vui lòng điền đầy đủ thông tin loại quân tư trang!")
+            else:
+                QuanTuTrang.objects.create(
+                    ten_qtt=ten_qtt,
+                    loai_qtt=loai_qtt,
+                    kich_co=kich_co,
+                    ma_qtt=ma_qtt
+                )
+                messages.success(request, f"Đã tạo loại quân tư trang: {ten_qtt}.")
         
-        'grouped_don_vi': grouped_don_vi
-    } )  
+        elif 'update_qtt' in request.POST:
+            # Cập nhật quân tư trang
+            id = request.POST.get('id')  # Thay đổi từ 'ma_qtt' sang 'id'
+            ma_qtt = request.POST.get('ma_qtt')
+            ten_qtt = request.POST.get('ten_qtt')
+            loai_qtt = request.POST.get('loai_qtt')
+            kich_co = request.POST.get('kich_co', '')
 
+            qtt = get_object_or_404(QuanTuTrang, id=id)
+            qtt.ten_qtt = ten_qtt
+            qtt.loai_qtt = loai_qtt
+            qtt.kich_co = kich_co
+            qtt.save()
+            messages.success(request, f"Đã cập nhật quân tư trang: {ten_qtt}.")
+
+        
+        elif 'delete_qtt' in request.POST:
+            ma_qtt = request.POST.get('ma_qtt')
+            qtt = get_object_or_404(QuanTuTrang, id=ma_qtt)  # Tìm kiếm theo 'ma_qtt'
+            qtt.delete()
+            messages.success(request, f"Đã xóa quân tư trang: {ma_qtt}.")
+    
+    qtt_list = QuanTuTrang.objects.all()
+    return render(request, 'appstatic/manage_qtt.html', {'qtt_list': qtt_list})

@@ -10,9 +10,11 @@ urlpatterns = [
     path('logout/', views.logout_view, name='logout'),  
     path('D20/', views.D20_view, name='D20'),  
     path('kho/<int:don_vi_id>/', views.kho_view, name='kho'),
-    path('trung-doan/', views.trung_doan_view, name='trung-doan'),
     path('nhap/', views.nhap_view, name='nhap'),
     path('xuat/', views.phieu_xuat_list_view, name='xuat'),
+    path('manage_qtt/', views.manage_qtt, name='manage_qtt'),
 
 
+    # path('manage_qtt/update/', views.update_qtt, name='update_qtt'),
+    # path('manage_qtt/delete/', views.delete_qtt, name='delete_qtt'),
 ]

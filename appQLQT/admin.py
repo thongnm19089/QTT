@@ -12,7 +12,7 @@ from django.contrib import admin
 from .models import UserProfile
 
 class UserProfileAdmin(admin.ModelAdmin):
-    list_display = ('user', 'cap_do')  # Hiển thị các trường trong bảng quản trị
+    list_display = ('user', 'cap_do','don_vi')  # Hiển thị các trường trong bảng quản trị
     search_fields = ('user__username', 'cap_do')  # Tìm kiếm theo tên người dùng và số điện thoại
     list_filter = ('cap_do',)  # Lọc theo cấp độ người dùng
 

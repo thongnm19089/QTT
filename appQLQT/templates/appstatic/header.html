@@ -1,40 +1,35 @@
 {% load static %}
 <header>
-    <!-- <nav class="container">
-        <a href="{% url 'D20' %}"><div class="logo-container">
-            <img src="{% static 'image/logo.png' %}" alt="Logo" class="logo-image">
-            <div class="logo">TIỂU ĐOÀN 20</div>
-        </div></a>
-        <div class="nav-links">
+  <nav class="container">
+    <a href="{% url 'D20' %}">
+    <div class="logo-container">
+        <img src="{% static 'image/logo.png' %}" alt="Logo" class="logo-image">
 
-            <a href="#" style="display: inline-flex; align-items: center;">
-                <i class="bi bi-person-circle" style="margin-right: 5px;"></i>{{ request.user.username }}
-                <ul class="dropdown-menu">
-                    <li><a class="dropdown-item" href="#">Action</a></li>
-                    <li><a class="dropdown-item" href="#">Another action</a></li>
-                    <li><hr class="dropdown-divider"></li>
-                    <li><a class="dropdown-item" href="#">Something else here</a></li>
-                  </ul>
-            </a>
-                <li class="nav-item">
-                  <a class="nav-link" href="#">Link</a>
-                </li>
-                <li class="nav-item dropdown">
-                  <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                    Dropdown
-                  </a>
-                 
-                </li>
-                <li class="nav-item">
-                  <a class="nav-link disabled" aria-disabled="true">Disabled</a>
-                </li>
-            
-        
-           
-
-        </div>
-    </nav> -->
-    <nav class="navbar navbar-expand-sm navbar-dark" style="background-color: #23517200;">
+        <div class="logo">TIỂU ĐOÀN 20</div>
+    </div></a>
+    <div class="nav-links">
+        <a href="{% url 'manage_qtt' %}">Quan ly quan trang</a>
+        <a href="#">Hướng dẫn</a>
+        <a href="#">Liên hệ</a>
+    
+        {% if request.user.is_authenticated %}
+        <!-- Hiển thị tên người dùng và icon đăng xuất -->
+        <a href="#" style="display: inline-flex; align-items: center;">
+            <i class="bi bi-person-circle" style="margin-right: 5px;"></i>{{ request.user.username }}
+        </a>
+        <a href="{% url 'logout' %}" style="display: inline-flex; align-items: center; color: var(--text-color);">
+            <i class="bi bi-box-arrow-right" style="margin-right: 5px;"></i>Đăng xuất
+        </a>
+    {% else %}
+        <!-- Hiển thị nút Đăng nhập nếu chưa đăng nhập -->
+        <a href="{% url 'login' %}" style="display: inline-flex; align-items: center; color: var(--text-color);">
+            <i class="bi bi-box-arrow-in-right" style="margin-right: 5px;"></i>Đăng nhập
+        </a>
+    {% endif %}
+    </div>
+    
+</nav>
+    <!-- <nav class="navbar navbar-expand-sm navbar-dark" style="background-color: #23517200;">
         <div class="container-fluid">
             <a href="{% url 'D20' %}"><div class="logo-container">
                 <img src="{% static 'image/logo.png' %}" alt="Logo" class="logo-image">
@@ -45,34 +40,9 @@
           </button>
           <div class="collapse navbar-collapse" id="collapsibleNavbar">
             <ul class="navbar-nav justify-content-end">
-                    <!-- {% for group_name, don_vi_list in grouped_don_vi.items %}
-                    <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">{{ group_name }}</a>
-                    <ul class="dropdown-menu">
-                        {% for don_vi in don_vi_list %}
-                        <li><a class="dropdown-item" href="{% url 'kho' don_vi.id %}">{{ don_vi.ten_don_vi }}</a></li>
-                      {% endfor %}
-                    </ul>
-                    </li>
-                    {% empty %}
-                        <li>Không có nhóm đơn vị nào.</li>
-                    {% endfor %} -->
+                  
 
-                   <!-- {% for group_name, don_vi_list in grouped_don_vi.items %} -->
-                   
-                      {% for don_vi in don_vi_list %}
-                        <!-- <li><a class="dropdown-item" href="{% url 'kho' don_vi.id %}">{{ don_vi.ten_don_vi }}</a></li> -->
-                        <li class="nav-item">
-                          <a class="nav-link" href="{% url 'kho' don_vi.id %}">{{ don_vi.ten_don_vi }}</a>
-                        </li>
-                      {% endfor %}
-                   
-                    <!-- </li>
-                    {% empty %}
-                        <li>Không có nhóm đơn vị nào.</li>
-                    {% endfor %} -->
-
-                
+            
                     {% if request.user.is_authenticated %}
               <li class="nav-item">
                 <a class="nav-link" href="#">{{ request.user.username }}</a>
@@ -90,5 +60,5 @@
           </div>
         </div>
       </nav>
-      
+       -->
 </header>
