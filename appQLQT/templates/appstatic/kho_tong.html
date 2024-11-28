@@ -189,9 +189,16 @@
                 </div>
             </div> -->
             <!-- Nút mở modal -->
-<button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#importQTTModal">
-    Nhập quân tư trang vào kho
-</button>
+
+            {% if user_profile.cap_do == 'kho' %}
+            <!-- Nếu người dùng là Trung đoàn, không hiển thị nút xuất -->
+            <button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#importQTTModal">
+                Nhập quân tư trang vào kho
+            </button>
+            {% else %}
+          
+            {% endif %}
+
 
 <!-- Modal -->
 <div class="modal fade" id="importQTTModal" tabindex="-1" aria-labelledby="importQTTModalLabel" aria-hidden="true">
@@ -229,10 +236,7 @@
 
 
 {% if user_profile.cap_do == 'trung_doi' %}
-<!-- Nếu người dùng là Trung đoàn, không hiển thị nút xuất -->
-<button type="button" class="btn" disabled>
-    Xuất QTT
-</button>
+
 {% else %}
 <!-- Nếu người dùng không phải Trung đoàn, hiển thị nút xuất -->
 <button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#exportQTTModal">
