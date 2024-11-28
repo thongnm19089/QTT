@@ -8,7 +8,15 @@ from .models import (
 
 
 
+from django.contrib import admin
+from .models import UserProfile
 
+class UserProfileAdmin(admin.ModelAdmin):
+    list_display = ('user', 'cap_do')  # Hiển thị các trường trong bảng quản trị
+    search_fields = ('user__username', 'cap_do')  # Tìm kiếm theo tên người dùng và số điện thoại
+    list_filter = ('cap_do',)  # Lọc theo cấp độ người dùng
+
+admin.site.register(UserProfile, UserProfileAdmin)
 
 @admin.register(Kho)
 class KhoAdmin(admin.ModelAdmin):
@@ -17,7 +25,7 @@ class KhoAdmin(admin.ModelAdmin):
 
 @admin.register(DonVi)
 class DonViAdmin(admin.ModelAdmin):
-    list_display = ('ten_don_vi', 'cap_do', 'quan_li', 'don_vi_cha')
+    list_display = ('ten_don_vi', 'cap_do', 'quan_li', 'don_vi_cha','code')
     search_fields = ('ten_don_vi', 'cap_do')
     list_filter = ('cap_do',)
 

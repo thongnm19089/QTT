@@ -230,9 +230,17 @@
 </div>
 
 
-        <button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#exportQTTModal">
-            Xuất QTT
-        </button>
+{% if user_profile.cap_do == 'trung_doi' %}
+<!-- Nếu người dùng là Trung đoàn, không hiển thị nút xuất -->
+<button type="button" class="btn" disabled>
+    Xuất QTT
+</button>
+{% else %}
+<!-- Nếu người dùng không phải Trung đoàn, hiển thị nút xuất -->
+<button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#exportQTTModal">
+    Xuất QTT
+</button>
+{% endif %}
         
         <div class="modal fade" id="exportQTTModal" tabindex="-1" aria-labelledby="exportQTTModalLabel" aria-hidden="true">
             <div class="modal-dialog">

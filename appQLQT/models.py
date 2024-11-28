@@ -10,6 +10,13 @@ from django.conf import settings
 from django.contrib.auth import get_user_model
 
 # Model Kho
+DON_VI_CHOICES = [
+        ('tong', 'Kho'),
+        ('tieu_doan', 'Tiểu đoàn'),
+        ('dai_doi', 'Đại đội'),
+        ('trung_doi', 'Trung đội'),
+  
+    ]
 class Kho(models.Model):
     ten_kho = models.CharField(max_length=100)
     don_vi = models.OneToOneField('DonVi', on_delete=models.CASCADE, related_name='kho',null=True)  # Mỗi đơn vị có 1 kho
@@ -25,24 +32,21 @@ class Kho(models.Model):
         if self.don_vi:
             return f"{self.ten_kho} ({self.don_vi.ten_don_vi})"
         return f"{self.ten_kho} (Chưa liên kết đơn vị)"
+    
 
-
+class UserProfile(models.Model):
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='profile')
+    cap_do = models.CharField(max_length=20, choices=DON_VI_CHOICES,null=True, blank=True)
+    def __str__(self):
+        return f"UserProfile for {self.user.username} - {self.get_cap_do_display()}"
     
 class DonVi(models.Model):
-    DON_VI_CHOICES = [
-        ('tong', 'Đơn vị'),
-        ('trung_doan', 'Trung đoàn'),
-        ('dai_doi', 'Đại đội'),
-        ('tieu_doi', 'Tiểu đội'),
-        ('hau_can', 'Hậu cần'),
-    ]
-    
     ten_don_vi = models.CharField(max_length=100)
     cap_do = models.CharField(max_length=20, choices=DON_VI_CHOICES)
     quan_li = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     don_vi_cha = models.ForeignKey('self', null=True, blank=True, on_delete=models.SET_NULL, related_name='sub_units')
     dashboard_template = models.CharField(max_length=50, default='dashboard.html')
-
+    code = models.CharField(max_length=50 , blank=True , null=True)
     def save(self, *args, **kwargs):
         # Nếu đối tượng DonVi chưa có quản lí, tự động tạo user mới
         if not self.quan_li:

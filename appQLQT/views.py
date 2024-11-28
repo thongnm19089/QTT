@@ -27,7 +27,8 @@ def kho_view(request, don_vi_id):
     # Lấy đơn vị và kho liên kết
     don_vi = get_object_or_404(DonVi, id=don_vi_id)
     kho = don_vi.kho  # Liên kết OneToOne giữa DonVi và Kho
-
+    user_profile = request.user.profile
+    print(user_profile)
     if request.method == 'POST':
         try:
             # Xử lý tạo loại quân tư trang mới
@@ -150,12 +151,26 @@ def kho_view(request, don_vi_id):
 
     quan_tu_trang_list1 = QuanTuTrang.objects.all()
 
-    don_vi_list = DonVi.objects.exclude(id=don_vi.id)
+    don_vi_list = DonVi.objects.all()
 
+    if user_profile.cap_do == 'kho':
+        don_vi_list = don_vi_list.filter(cap_do='tieu_doan')
+    elif user_profile.cap_do == 'tieu_doan':
+        don_vi_list = don_vi_list.filter(cap_do='dai_doi')
+    elif user_profile.cap_do == 'dai_doi':
+        don_vi_list = don_vi_list.filter(cap_do='trung_doi')
+    elif user_profile.cap_do == 'trung_doi':
+        don_vi_list = don_vi_list.filter(cap_do='trung_doi')
+    # elif user_profile.cap_do == 'tieu_doan':
+    #     don_vi_list = don_vi_list.filter(cap_do='trung_doi')
+    print(don_vi_list)
+    don_vi_list = don_vi_list[:1]  # Giới hạn chỉ lấy 1 đơn vị
+
+    # don_vi_list = DonVi.objects.all().order_by('code')  # hoặc thêm filter nếu cần
     grouped_don_vi = defaultdict(list)
-    for dv in DonVi.objects.all():
+    for dv in DonVi.objects.all().order_by('code'):
         grouped_don_vi[dv.get_cap_do_display()].append(dv)
-    grouped_don_vi = dict(grouped_don_vi)  # Chuyển defaultdict thành dict để tương thích với template
+    grouped_don_vi = dict(grouped_don_vi)
 
     return render(request, 'appstatic/kho_tong.html', {
         'don_vi': don_vi,
@@ -163,7 +178,8 @@ def kho_view(request, don_vi_id):
         'quan_tu_trang_list': quan_tu_trang_list,
         'quan_tu_trang_list1': quan_tu_trang_list1,
         'don_vi_list': don_vi_list,
-        'grouped_don_vi': grouped_don_vi
+        'grouped_don_vi': grouped_don_vi,
+        'user_profile': user_profile,
     })
 
 
