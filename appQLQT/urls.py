@@ -13,6 +13,7 @@ urlpatterns = [
     path('nhap/', views.nhap_view, name='nhap'),
     path('xuat/', views.phieu_xuat_list_view, name='xuat'),
     path('manage_qtt/', views.manage_qtt, name='manage_qtt'),
+    path('kho/<int:kho_id>/quan-tu-trang/<int:quan_tu_trang_id>/delete/', views.delete_quan_tu_trang, name='delete_quan_tu_trang'),
 
 
     # path('manage_qtt/update/', views.update_qtt, name='update_qtt'),

@@ -52,11 +52,7 @@ def kho_view(request, don_vi_id):
                         quan_tu_trang=quan_tu_trang,
                         defaults={'so_luong': so_luong}
                     )
-                    # if not created:
-                    #     kho_quan_trang.so_luong += so_luong
-                    #     kho_quan_trang.save()
-
-                    # Lưu phiếu nhập
+                  
                     PhieuNhap.objects.create(kho=kho, quan_tu_trang=quan_tu_trang, so_luong_nhap=so_luong)
                     messages.success(request, f"Đã nhập {so_luong} {quan_tu_trang.ten_qtt} vào kho {kho.ten_kho}.")
 
@@ -70,7 +66,6 @@ def kho_view(request, don_vi_id):
                     # Lấy thông tin đơn vị nhận
                     don_vi_nhan = get_object_or_404(DonVi, id=don_vi_nhan_id)
 
-                    # Nếu không có quân tư trang hoặc số lượng
                     if not qtt_ids or not so_luong_exports or len(so_luong_exports) != 1:
                         messages.error(request, "Vui lòng nhập đầy đủ thông tin để xuất!")
                         return redirect(request.path)
@@ -88,11 +83,7 @@ def kho_view(request, don_vi_id):
                             kho_quan_trang = get_object_or_404(KhoQuanTrang, kho=kho, quan_tu_trang=quan_tu_trang)
 
                             if kho_quan_trang.so_luong >= so_luong_export:
-                                # Giảm số lượng trong kho nguồn
-                                # kho_quan_trang.so_luong -= so_luong_export
-                                # kho_quan_trang.save()
-
-                                # Thêm vào kho của đơn vị nhận
+                               
                                 don_vi_kho = don_vi_nhan.kho
                                 don_vi_kho_qtt, created = KhoQuanTrang.objects.get_or_create(
                                     kho=don_vi_kho,
@@ -110,7 +101,11 @@ def kho_view(request, don_vi_id):
                                     so_luong_xuat=so_luong_export,
                                     don_vi_nhan=don_vi_nhan
                                 )
-
+                                PhieuNhap.objects.create(
+                                                        kho=don_vi_nhan.kho,  # Phiếu nhập sẽ được tạo cho kho của đơn vị nhận
+                                                        quan_tu_trang=quan_tu_trang,
+                                                        so_luong_nhap=so_luong_export
+                                                    )
                                 messages.success(
                                     request,
                                     f"Đã xuất {so_luong_export} {quan_tu_trang.ten_qtt} đến {don_vi_nhan.ten_don_vi}."
@@ -168,24 +163,76 @@ def kho_view(request, don_vi_id):
         'user_profile': user_profile,
     })
 
+from django.shortcuts import get_object_or_404, redirect
+from django.contrib import messages
+from .models import KhoQuanTrang
 
+def delete_quan_tu_trang(request, kho_id, quan_tu_trang_id):
+    # Get the KhoQuanTrang object
+    kho_quan_trang = get_object_or_404(KhoQuanTrang, kho_id=kho_id, quan_tu_trang_id=quan_tu_trang_id)
+
+    # Get the related Kho object to fetch the don_vi_id
+    kho = kho_quan_trang.kho
+    don_vi_id = kho.don_vi.id  # Get the don_vi_id from the Kho object
+
+    # Delete the KhoQuanTrang object
+    kho_quan_trang.delete()
+
+    # Add a success message
+    messages.success(request, "Quân tư trang đã được xóa thành công.")
+
+    # Redirect to the kho view using the correct don_vi_id
+    return redirect('kho', don_vi_id=don_vi_id)
+
+
+from collections import defaultdict
+from django.shortcuts import render
+from .models import PhieuXuat, DonVi, UserProfile
 
 def phieu_xuat_list_view(request):
-    phieu_xuat_list = PhieuXuat.objects.all().order_by('-ngay_xuat')
-    don_vi_list12 = DonVi.objects.all()  # Loại trừ chính đơn vị hiện tại
+    # Get the logged-in user
+    user = request.user
 
-    grouped_don_vi = defaultdict(list)
+    # Get the 'UserProfile' associated with the logged-in user
+    try:
+        user_profile = user.profile  # Access the user profile (assuming a OneToOneField)
+    except UserProfile.DoesNotExist:
+        user_profile = None  # Handle the case where no profile exists for the user
 
-    for don_vi in don_vi_list12:  # Lặp qua danh sách đơn vị
-        grouped_don_vi[don_vi.get_cap_do_display()].append(don_vi)
+    # Check if the user has a valid profile and DonVi
+    if user_profile and user_profile.don_vi:
+        don_vi = user_profile.don_vi
 
-    # Chuyển đổi defaultdict thành dict
-    grouped_don_vi = dict(grouped_don_vi)
-    return render(request, 'appstatic/phieu_xuat.html', {
-        'phieu_xuat_list': phieu_xuat_list,
-         'grouped_don_vi': grouped_don_vi
-    })
+        phieu_xuat_list = PhieuXuat.objects.filter(kho__don_vi=don_vi).order_by('-ngay_xuat')
+
+        # Group 'DonVi' by 'cap_do'
+        don_vi_list = DonVi.objects.exclude(id=don_vi.id)  # Exclude the user's DonVi to avoid showing it
+        grouped_don_vi = defaultdict(list)
+
+        for don_vi_item in don_vi_list:
+            grouped_don_vi[don_vi_item.get_cap_do_display()].append(don_vi_item)
+
+        # Convert defaultdict to dict
+        grouped_don_vi = dict(grouped_don_vi)
+
+        # Render the filtered 'PhieuXuat' and grouped 'DonVi' to the template
+        don_vi = user_profile.don_vi
+
+        return render(request, 'appstatic/phieu_xuat.html', {
+            'phieu_xuat_list': phieu_xuat_list,
+            'grouped_don_vi': grouped_don_vi,
+            'don_vi': don_vi,
+        })
+    else:
+        # Handle the case where the user doesn't have a 'UserProfile' or 'DonVi'
+        return render(request, 'error_template.html', {'error_message': "You do not manage any DonVi."})
+
 def nhap_view(request):
+    user_profile = request.user.profile
+    don_vi = user_profile.don_vi
+    kho_records = Kho.objects.filter(don_vi=don_vi)
+    
+
     don_vi_list12 = DonVi.objects.all()  # Loại trừ chính đơn vị hiện tại
 
     grouped_don_vi = defaultdict(list)
@@ -196,7 +243,9 @@ def nhap_view(request):
     # Chuyển đổi defaultdict thành dict
     grouped_don_vi = dict(grouped_don_vi)
         
-    phieu_nhap_list = PhieuNhap.objects.all().order_by('-ngay_nhap')  
+    # phieu_nhap_list = PhieuNhap.objects.all().order_by('-ngay_nhap')  
+    phieu_nhap_list = PhieuNhap.objects.filter(kho__in=kho_records).order_by('-ngay_nhap')  
+
     kho_id = request.GET.get('kho_id') 
     if kho_id:
         try:
@@ -204,9 +253,13 @@ def nhap_view(request):
             phieu_nhap_list = phieu_nhap_list.filter(kho=kho)
         except Kho.DoesNotExist:
             pass 
+
+    don_vi = user_profile.don_vi
+
     return render(request, 'appstatic/phieu_nhap.html', {
         'phieu_nhap_list': phieu_nhap_list,
-        'grouped_don_vi': grouped_don_vi
+        'grouped_don_vi': grouped_don_vi,
+        'don_vi': don_vi
 
     })
 
@@ -270,10 +323,11 @@ def D20_view(request):
 
     # Lấy đơn vị của người dùng hiện tại
     current_user_don_vi = get_current_user_don_vi(user_profile)
-
+    don_vi = user_profile.don_vi
     # Truyền dữ liệu vào template
     return render(request, 'appstatic/D20_1.html', {
-        'current_user_don_vi': current_user_don_vi
+        'current_user_don_vi': current_user_don_vi,
+        'don_vi': don_vi
     })
 
 from django.shortcuts import render
@@ -323,4 +377,11 @@ def manage_qtt(request):
             messages.success(request, f"Đã xóa quân tư trang: {ma_qtt}.")
     
     qtt_list = QuanTuTrang.objects.all()
-    return render(request, 'appstatic/manage_qtt.html', {'qtt_list': qtt_list})
+    user_profile = request.user.profile  # Đây là đối tượng UserProfile của người dùng
+
+    don_vi = user_profile.don_vi
+    return render(request, 'appstatic/manage_qtt.html', {
+        'qtt_list': qtt_list,
+        'don_vi': don_vi
+        }
+                  )

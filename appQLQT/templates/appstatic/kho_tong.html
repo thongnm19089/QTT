@@ -128,21 +128,28 @@
                     <th>Loại</th>
                     <th>Kích cỡ</th>
                     <th>Số lượng</th>
+                    <th>Xóa</th>
                 </tr>
             </thead>
             <tbody>
                 {% for item in quan_tu_trang_list %}
-        <tr>
-            <td>{{ item.quan_tu_trang.ten_qtt }}</td>
-            <td>{{ item.quan_tu_trang.loai_qtt }}</td>
-            <td>{{ item.quan_tu_trang.kich_co }}</td>
-            <td>{{ item.so_luong }}</td>
-        </tr>
-        {% empty %}
-        <tr>
-            <td colspan="4">Không có quân tư trang nào trong kho.</td>
-        </tr>
-        {% endfor %}
+                <tr>
+                    <td>{{ item.quan_tu_trang.ten_qtt }}</td>
+                    <td>{{ item.quan_tu_trang.loai_qtt }}</td>
+                    <td>{{ item.quan_tu_trang.kich_co }}</td>
+                    <td>{{ item.so_luong }}</td>
+                    <td>
+                        <form method="post" action="{% url 'delete_quan_tu_trang' kho_id=kho.id quan_tu_trang_id=item.quan_tu_trang.id %}" style="display:inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger" onclick="return confirm('Bạn có chắc chắn muốn xóa quân tư trang này?')">Xóa</button>
+                        </form>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5">Không có quân tư trang nào trong kho.</td>
+                </tr>
+                {% endfor %}
             </tbody>
         </table>
 
@@ -313,12 +320,15 @@
         
         <!-- Hiển thị thông báo -->
         {% if messages %}
-            <ul class="message-list">
-                {% for message in messages %}
-                    <li class="{{ message.tags }}">{{ message }}</li>
-                {% endfor %}
-            </ul>
-        {% endif %}
+    <ul class="message-list">
+        {% for message in messages %}
+            <li class="{{ message.tags }}" id="message-{{ forloop.counter }}">
+                {{ message }}
+            </li>
+        {% endfor %}
+    </ul>
+{% endif %}
+
     </div>
     <!-- <script>
         function disableDoubleClick(form) {
@@ -331,4 +341,19 @@
             return true; // Cho phép gửi form
         }
     </script> -->
+    <script>
+        // Wait until the page has loaded
+        document.addEventListener("DOMContentLoaded", function() {
+            // Get all message list items
+            const messages = document.querySelectorAll('.message-list li');
+    
+            // Loop through each message and hide it after 3 seconds
+            messages.forEach(function(message, index) {
+                setTimeout(function() {
+                    message.style.display = 'none';
+                }, 3000 * (index + 1)); // Delay messages by 3 seconds each (optional)
+            });
+        });
+    </script>
+    
 {% endblock %}

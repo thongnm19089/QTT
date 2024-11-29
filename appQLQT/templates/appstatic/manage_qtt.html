@@ -132,19 +132,20 @@
         <td>{{ item.kich_co }}</td>
         <td>
             <!-- Nút cập nhật -->
-            <button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#updateQTTModal" 
+            <button type="button" data-bs-toggle="modal" data-bs-target="#updateQTTModal" 
                     data-ma_qtt="{{ item.ma_qtt }}" 
                     data-ten_qtt="{{ item.ten_qtt }}" 
                     data-loai_qtt="{{ item.loai_qtt }}" 
                     data-kich_co="{{ item.kich_co }}" 
                     data-id="{{ item.id }}"> <!-- Truyền id vào modal -->
-                Cập nhật
+                    <i class="fas fa-cogs"></i> <!-- This will show a gear icon -->
+
             </button>
             <!-- Nút xóa -->
                 <form method="POST" style="display:inline;" action="{% url 'manage_qtt' %}">
                     {% csrf_token %}
                     <input type="hidden" name="ma_qtt" value="{{ item.id }}">  <!-- Dùng 'id' hoặc 'ma_qtt' -->
-                    <button type="submit" name="delete_qtt" class="btn btn-danger" onclick="return confirm('Bạn có chắc chắn muốn xóa quân tư trang này?')">Xóa</button>
+                    <button type="submit" name="delete_qtt"  onclick="return confirm('Bạn có chắc chắn muốn xóa quân tư trang này?')"><i class="fa fa-trash" aria-hidden="true"></i></button>
                 </form>
 
         </td>

@@ -5,8 +5,8 @@
     <div class="logo-container">
         <img src="{% static 'image/logo.png' %}" alt="Logo" class="logo-image">
 
-        <div class="logo">TIỂU ĐOÀN 20</div>
-    </div></a>
+        <div class="logo">{{ don_vi.ten_don_vi }}</div>
+      </div></a>
     <div class="nav-links">
         <a href="{% url 'manage_qtt' %}">Quan ly quan trang</a>
         <a href="#">Hướng dẫn</a>

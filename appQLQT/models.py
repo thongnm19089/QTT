@@ -134,7 +134,7 @@ class PhieuNhap(models.Model):
     kho = models.ForeignKey(Kho, on_delete=models.CASCADE)
     quan_tu_trang = models.ForeignKey(QuanTuTrang, on_delete=models.CASCADE)
     so_luong_nhap = models.PositiveIntegerField()
-    ngay_nhap = models.DateField(auto_now_add=True)
+    ngay_nhap = models.DateTimeField(auto_now_add=True)
 
     def save(self, *args, **kwargs):
         if not self.code:
@@ -150,7 +150,7 @@ class PhieuXuat(models.Model):
     kho = models.ForeignKey(Kho, on_delete=models.CASCADE)
     quan_tu_trang = models.ForeignKey(QuanTuTrang, on_delete=models.CASCADE)
     so_luong_xuat = models.PositiveIntegerField()
-    ngay_xuat = models.DateField(auto_now_add=True)
+    ngay_xuat = models.DateTimeField(auto_now_add=True)
     don_vi_nhan = models.ForeignKey(DonVi, on_delete=models.CASCADE)
 
     def save(self, *args, **kwargs):
@@ -191,14 +191,14 @@ class PhieuNhan(models.Model):
     phieu_xuat = models.ForeignKey(PhieuXuat, on_delete=models.CASCADE)
     don_vi_nhan = models.ForeignKey(DonVi, on_delete=models.CASCADE, related_name='phieunhan_nhan')
     so_luong_nhan = models.PositiveIntegerField()
-    ngay_nhan = models.DateField(auto_now_add=True)
+    ngay_nhan = models.DateTimeField(auto_now_add=True)
 
 class PhieuCapPhat(models.Model):
     don_vi_giao = models.ForeignKey(DonVi, related_name='don_vi_giao', on_delete=models.CASCADE)
     don_vi_nhan = models.ForeignKey(DonVi, related_name='don_vi_nhan', on_delete=models.CASCADE)
     quan_tu_trang = models.ForeignKey(QuanTuTrang, on_delete=models.CASCADE)
     so_luong_cap_phat = models.PositiveIntegerField()
-    ngay_cap_phat = models.DateField(auto_now_add=True)
+    ngay_cap_phat = models.DateTimeField(auto_now_add=True)
     da_nhan = models.BooleanField(default=False)
 
 class PhieuXacNhan(models.Model):
