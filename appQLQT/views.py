@@ -84,17 +84,18 @@ def kho_view(request, don_vi_id):
 
                             if kho_quan_trang.so_luong >= so_luong_export:
                                
+                                kho_quan_trang.so_luong -= so_luong_export
+                                kho_quan_trang.save()
+                                
+                                # Cập nhật kho đích
                                 don_vi_kho = don_vi_nhan.kho
                                 don_vi_kho_qtt, created = KhoQuanTrang.objects.get_or_create(
                                     kho=don_vi_kho,
                                     quan_tu_trang=quan_tu_trang,
-                                    defaults={'so_luong': so_luong_export}
+                                    defaults={'so_luong': 0}  # Đặt mặc định là 0
                                 )
-                                # if not created:
-                                #     don_vi_kho_qtt.so_luong += so_luong_export
-                                #     don_vi_kho_qtt.save()
-
-                                # Lưu phiếu xuất
+                                don_vi_kho_qtt.so_luong += so_luong_export  # Luôn cập nhật số lượng
+                                don_vi_kho_qtt.save()
                                 PhieuXuat.objects.create(
                                     kho=kho,
                                     quan_tu_trang=quan_tu_trang,

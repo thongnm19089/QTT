@@ -78,22 +78,22 @@ WSGI_APPLICATION = "duanQLQT.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-# DATABASES = {
-#   'default': {
-#         'ENGINE': 'django.db.backends.mysql',
-#         'NAME': 'QLQT',  # Tên của cơ sở dữ liệu bạn đã tạo
-#         'USER': 'root',         # Tên người dùng mặc định của MySQL trong XAMPP là 'root'
-#         'PASSWORD': '',         # Mật khẩu mặc định thường là trống
-#         'HOST': 'localhost',
-#         'PORT': '3306',         # Cổng mặc định của MySQL
-#     }
-# }
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',  # Tệp SQLite sẽ được tạo trong thư mục gốc của dự án
+  'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'qtts',  # Tên của cơ sở dữ liệu bạn đã tạo
+        'USER': 'root',         # Tên người dùng mặc định của MySQL trong XAMPP là 'root'
+        'PASSWORD': '',         # Mật khẩu mặc định thường là trống
+        'HOST': 'localhost',
+        'PORT': '3306',         # Cổng mặc định của MySQL
     }
 }
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',  # Tệp SQLite sẽ được tạo trong thư mục gốc của dự án
+#     }
+# }
 
 
 # Password validation

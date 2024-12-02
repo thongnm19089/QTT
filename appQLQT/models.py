@@ -153,37 +153,37 @@ class PhieuXuat(models.Model):
     ngay_xuat = models.DateTimeField(auto_now_add=True)
     don_vi_nhan = models.ForeignKey(DonVi, on_delete=models.CASCADE)
 
-    def save(self, *args, **kwargs):
-        if not self.code:
-            self.code = generate_random_code()
-        try:
-            # Kiểm tra QTT trong kho xuất
-            kho_quan_trang = KhoQuanTrang.objects.get(kho=self.kho, quan_tu_trang=self.quan_tu_trang)
-            if kho_quan_trang.so_luong >= self.so_luong_xuat:
-                # Giảm số lượng từ kho xuất
-                kho_quan_trang.so_luong -= self.so_luong_xuat
-                kho_quan_trang.save()
+    # def save(self, *args, **kwargs):
+    #     if not self.code:
+    #         self.code = generate_random_code()
+    #     try:
+    #         # Kiểm tra QTT trong kho xuất
+    #         kho_quan_trang = KhoQuanTrang.objects.get(kho=self.kho, quan_tu_trang=self.quan_tu_trang)
+    #         if kho_quan_trang.so_luong >= self.so_luong_xuat:
+    #             # Giảm số lượng từ kho xuất
+    #             kho_quan_trang.so_luong -= self.so_luong_xuat
+    #             kho_quan_trang.save()
 
-                # Lấy kho của đơn vị nhận (trung đoàn)
-                kho_nhan = self.don_vi_nhan.kho
-                if kho_nhan:
-                    # Tăng số lượng vào kho nhận
-                    kho_nhan_quan_trang, created = KhoQuanTrang.objects.get_or_create(
-                        kho=kho_nhan,
-                        quan_tu_trang=self.quan_tu_trang,
-                        defaults={'so_luong': self.so_luong_xuat}
-                    )
-                    if not created:
-                        kho_nhan_quan_trang.so_luong += self.so_luong_xuat
-                        kho_nhan_quan_trang.save()
-                else:
-                    raise ValueError("Kho của đơn vị nhận không tồn tại.")
+    #             # Lấy kho của đơn vị nhận (trung đoàn)
+    #             kho_nhan = self.don_vi_nhan.kho
+    #             if kho_nhan:
+    #                 # Tăng số lượng vào kho nhận
+    #                 kho_nhan_quan_trang, created = KhoQuanTrang.objects.get_or_create(
+    #                     kho=kho_nhan,
+    #                     quan_tu_trang=self.quan_tu_trang,
+    #                     defaults={'so_luong': self.so_luong_xuat}
+    #                 )
+    #                 if not created:
+    #                     kho_nhan_quan_trang.so_luong += self.so_luong_xuat
+    #                     kho_nhan_quan_trang.save()
+    #             else:
+    #                 raise ValueError("Kho của đơn vị nhận không tồn tại.")
 
-            else:
-                raise ValueError("Không đủ số lượng trong kho để xuất.")
-        except KhoQuanTrang.DoesNotExist:
-            raise ValueError("Quân tư trang không có trong kho.")
-        super().save(*args, **kwargs)
+    #         else:
+    #             raise ValueError("Không đủ số lượng trong kho để xuất.")
+    #     except KhoQuanTrang.DoesNotExist:
+    #         raise ValueError("Quân tư trang không có trong kho.")
+    #     super().save(*args, **kwargs)
 
 
 class PhieuNhan(models.Model):
